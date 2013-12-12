@@ -1,0 +1,47 @@
+
+
+   /**
+    * Save the sort order for {{ entity }} entity.
+    *
+{% if 'annotation' == format %}
+    * @Route("/order/{field}/{direction}", name="{{ route_name_prefix }}_sort")
+    * @Template()
+{% endif %}
+    */
+    public function sortAction($field, $direction)
+    {
+        $this->setOrder('{{ entity|lower }}', $field, $direction);
+        return $this->redirect($this->generateUrl('{{ route_name_prefix }}'));
+    }
+
+    /**
+     * @param string $name   session name
+     * @param sting  $field  field name
+     * @param sting  $type   sort type ("ASC"/"DESC")
+     */
+    protected function setOrder($name, $field, $direction = 'ASC')
+    {
+        $this->getRequest()->getSession()->set('sort.' . $name, compact('field', 'direction'));
+    }
+
+    /**
+     * @param  string $name
+     * @return string
+     */
+    protected function getOrder($name)
+    {
+        $session = $this->getRequest()->getSession();
+        return $session->has('sort.' . $name) ? $session->get('sort.' . $name) : null;
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param string       $name
+     */
+    protected function addQueryBuilderSort(QueryBuilder $qb, $name)
+    {
+        $alias = current($qb->getDQLPart('from'))->getAlias();
+        if (is_array($order = $this->getOrder($name))) {
+            $qb->orderBy($alias . '.' . $order['field'], $order['direction']);
+        }
+    }

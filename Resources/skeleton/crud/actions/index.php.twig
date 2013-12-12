@@ -12,20 +12,29 @@
     {
         list($filterForm, $queryBuilder) = $this->filter();
 
-        list($entities, $pagerHtml) = $this->paginator($queryBuilder);
+{%- if withSort %}
+
+    // basic sorting
+    $this->addQueryBuilderSort($queryBuilder,'{{ entity|lower }}');
+
+{% endif %}
+
+    list($entities, $pagerHtml) = $this->paginator($queryBuilder);
 
 {% if 'annotation' == format %}
-        return array(
-            'entities' => $entities,
-            'pagerHtml' => $pagerHtml,
-            'filterForm' => $filterForm->createView(),
-        );
+    return array(
+    'entities' => $entities,
+    'pagerHtml' => $pagerHtml,
+    'filterForm' => $filterForm->createView(),
+    'filterIsActive' => $this->getRequest()->getSession()->has('{{ entity_class }}ControllerFilter'),
+    );
 {% else %}
-        return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:index.html.twig', array(
-            'entities' => $entities,
-            'pagerHtml' => $pagerHtml,
-            'filterForm' => $filterForm->createView(),
-        ));
+    return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:index.html.twig', array(
+    'entities' => $entities,
+    'pagerHtml' => $pagerHtml,
+    'filterForm' => $filterForm->createView(),
+    'filterIsActive' => $this->getRequest()->getSession()->has('{{ entity_class }}ControllerFilter'),
+    ));
 {% endif %}
     }
 

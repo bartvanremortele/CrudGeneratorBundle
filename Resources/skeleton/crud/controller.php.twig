@@ -17,6 +17,8 @@ use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\View\TwitterBootstrapView;
 
+use Doctrine\ORM\QueryBuilder;
+
 use {{ namespace }}\Entity\{{ entity }};
 {% if 'new' in actions or 'edit' in actions %}
 use {{ namespace }}\Form\{{ entity }}Type;
@@ -53,6 +55,10 @@ class {{ entity_class }}Controller extends Controller
 
     {%- if 'delete' in actions %}
         {%- include 'crud/actions/delete.php.twig' %}
+    {%- endif %}
+
+    {%- if withSort %}
+        {%- include 'crud/actions/sort.php.twig' %}
     {%- endif %}
 
 }

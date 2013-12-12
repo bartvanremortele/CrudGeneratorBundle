@@ -6,10 +6,24 @@ This bundle is inspired in an article wrote by Ricard Clau: [Extending SensioGen
 
 [![Build Status](https://secure.travis-ci.org/jordillonch/CrudGeneratorBundle.png?branch=master)](http://travis-ci.org/jordillonch/CrudGeneratorBundle)
 
+### Sorting (experimental)
+This bundle was forked and modified to provide support for 'sorting' (draft/experimental). The sorting implementation is *very basic* and not particlarly pretty, but does provide a starting point. 
+
+The sorting was inspired by the [experimental PUGX / PUGXGeneratorBundle Bundle's sort](https://github.com/PUGX/PUGXGeneratorBundle).
+
+### Filtering
+Added filtering ui change to highlight when a filter has been/is being applied to the results.
+A dependency to install [FontAwesome 3.2.1](http://fontawesome.io/3.2.1/) for filtering icon.
 
 ## Screenshot
 
 ![Screenshot](https://raw.github.com/jordillonch/CrudGeneratorBundle/master/screenshot.png "Screenshot")
+
+#### Screenshot Unfiltered
+![Screenshot Unfiltered](https://raw.github.com/bgdevlab/CrudGeneratorBundle/master/screenshot-unfiltered.png "Screenshot-Unfiltered")
+
+#### Screenshot Filtered Sorted
+![Screenshot Filtered Sorted](https://raw.github.com/bgdevlab/CrudGeneratorBundle/master/screenshot-sorted-filtered.png "Screenshot-Filtered-Sorted")
 
 ## Why use a CRUD generator?
 

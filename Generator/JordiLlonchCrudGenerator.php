@@ -13,12 +13,20 @@
 namespace JordiLlonch\Bundle\CrudGeneratorBundle\Generator;
 
 use Sensio\Bundle\GeneratorBundle\Generator\DoctrineCrudGenerator;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 class JordiLlonchCrudGenerator extends DoctrineCrudGenerator
 {
     protected $formFilterGenerator;
+
+    protected $withSort;
+
+    function setWithSort($sortable) {
+        $this->withSort = $sortable;
+    }
+
 
     public function generate(BundleInterface $bundle, $entity, ClassMetadataInfo $metadata, $format, $routePrefix, $needWriteActions, $forceOverwrite)
     {
@@ -30,6 +38,65 @@ class JordiLlonchCrudGenerator extends DoctrineCrudGenerator
             // form already exists
         }
     }
+
+
+    /**
+     * Generates the index.html.twig template in the final bundle.
+     *
+     * @param string $dir The path to the folder that hosts templates in the bundle
+     */
+    protected function generateIndexView($dir)
+    {
+        $this->renderFile('crud/views/index.html.twig.twig', $dir.'/index.html.twig', array(
+            'bundle'            => $this->bundle->getName(),
+            'entity'            => $this->entity,
+            'fields'            => $this->metadata->fieldMappings,
+            'actions'           => $this->actions,
+            'record_actions'    => $this->getRecordActions(),
+            'route_prefix'      => $this->routePrefix,
+            'route_name_prefix' => $this->routeNamePrefix,
+            'withSort'          => $this->withSort
+        ));
+    }
+
+    /**
+     * Generates the controller class only.
+     *
+     */
+    protected function generateControllerClass($forceOverwrite)
+    {
+        $dir = $this->bundle->getPath();
+
+        $parts = explode('\\', $this->entity);
+        $entityClass = array_pop($parts);
+        $entityNamespace = implode('\\', $parts);
+
+        $target = sprintf(
+            '%s/Controller/%s/%sController.php',
+            $dir,
+            str_replace('\\', '/', $entityNamespace),
+            $entityClass
+        );
+
+        if (!$forceOverwrite && file_exists($target)) {
+            throw new \RuntimeException('Unable to generate the controller as it already exists.');
+        }
+
+        $this->renderFile('crud/controller.php.twig', $target, array(
+            'actions'           => $this->actions,
+            'route_prefix'      => $this->routePrefix,
+            'route_name_prefix' => $this->routeNamePrefix,
+            'bundle'            => $this->bundle->getName(),
+            'entity'            => $this->entity,
+            'entity_class'      => $entityClass,
+            'namespace'         => $this->bundle->getNamespace(),
+            'entity_namespace'  => $entityNamespace,
+            'format'            => $this->format,
+            'withSort'          => $this->withSort
+        ));
+    }
+
+
 
     /**
      * Generates the entity form class if it does not exist.

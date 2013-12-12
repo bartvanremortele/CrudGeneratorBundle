@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCrudCommand;
 use JordiLlonch\Bundle\CrudGeneratorBundle\Generator\JordiLlonchCrudGenerator;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 
 class JordiLlonchCrudCommand extends GenerateDoctrineCrudCommand
@@ -25,17 +26,28 @@ class JordiLlonchCrudCommand extends GenerateDoctrineCrudCommand
     protected $generator;
     protected $formGenerator;
 
+    protected $withSort;
+
     protected function configure()
     {
         parent::configure();
 
         $this->setName('jordillonch:generate:crud');
         $this->setDescription('A CRUD generator with paginating and filters.');
+        $this->getDefinition()->addOption(new InputOption('with-sort', '', InputOption::VALUE_NONE, 'Whether or not to add sorting to list columns'), 1);
+        $this->setHelp($this->getHelp().<<<EOT
+
+
+Using the --with-sort determines whether or not to add sorting to list columns.
+EOT
+        );
     }
 
     protected function createGenerator($bundle = null)
     {
-        return new JordiLlonchCrudGenerator($this->getContainer()->get('filesystem'));
+        $crudGenerator = new JordiLlonchCrudGenerator($this->getContainer()->get('filesystem'));
+        $crudGenerator->setWithSort($this->withSort);
+        return $crudGenerator;
     }
 
     protected function getSkeletonDirs(BundleInterface $bundle = null)
@@ -62,5 +74,18 @@ class JordiLlonchCrudCommand extends GenerateDoctrineCrudCommand
         $dialog->writeSection($output, 'JordiLlonchCrudGeneratorBundle');
 
         parent::interact($input, $output);
+
+        // sort?
+        $withSort = $input->getOption('with-sort') ?: true;
+        $output->writeln(array(
+            '',
+            'You can add sort links to columns of generated index.',
+            '',
+        ));
+        $withSort = $dialog->askConfirmation($output, $dialog->getQuestion('Do you want to add sorting', $withSort ? 'yes' : 'no', '?'), $withSort);
+        $input->setOption('with-sort', $withSort);
+        $this->withSort = $withSort;
+
+        $output->writeln("");
     }
 }

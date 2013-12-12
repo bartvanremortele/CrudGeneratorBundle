@@ -6,6 +6,29 @@
 
 {{ "{% block page %}" }}
 
+
+{%- if withSort %}
+
+{{ "{% macro sortableHeader(name, field, label) %}
+    {% spaceless %}
+        {% set sort = app.session.get('sort.' ~ name) %}
+        {% if sort and sort.field == field %}
+            {% if sort.direction == 'DESC' %}
+                <a href=\"{{ path('"~ route_name_prefix ~"_sort', {field: field, direction: 'ASC'}) }}\">{{ label }} <i class=\"icon-sort-down\"></i></a>
+            {% elseif sort.direction == 'ASC' %}
+                <a href=\"{{ path('"~ route_name_prefix ~"_sort', {field: field, direction: 'DESC'}) }}\">{{ label }} <i class=\"icon-sort-up\"></i></a>
+            {% endif %}
+        {% else %}
+                <a href=\"{{ path('"~ route_name_prefix ~"_sort', {field: field, direction: 'ASC'}) }}\">{{ label }} <i class=\"icon-sort\"></i></a>
+        {% endif %}
+    {% endspaceless %}
+{% endmacro %}" }}
+
+{{ "{% from _self import sortableHeader %}" }}
+
+{% endif -%}
+
+
 <div class="row">
 
     <div class="span8">
@@ -22,6 +45,11 @@
     <div class="span2">
         <div class="filters-right">
             <a class="btn dropdown-toggle" data-toggle="collapse" data-target="#filters">
+            {{ "{% if filterIsActive %}" }}
+                <i class="icon-filter"></i>
+            {{ "{% else %}" }}
+                <i class="icon-filter feature-inactive"></i>
+            {{ "{% endif %}" }}
                 {{ "{{ 'views.index.filters'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }}
                 <span class="caret"></span>
             </a>
@@ -42,8 +70,8 @@
                 {{ "{{ form_rest(filterForm) }}" }}
 
                 <p>
-                    <button type="submit" name="filter_action" value="filter">{{ "{{ 'views.index.filter'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }}</button>
-                    <button type="submit" name="filter_action" value="reset">{{ "{{ 'views.index.reset'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }}</button>
+                    <button class="btn btn-primary" type="submit" name="filter_action" value="filter">{{ "{{ 'views.index.filter'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }}</button>
+                    <button class="btn btn-danger" type="submit" name="filter_action" value="reset">{{ "{{ 'views.index.reset'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }}</button>
                 </p>
             </form>
         </div>
@@ -56,7 +84,13 @@
         <tr>
         {%- for field, metadata in fields %}
 
-            <th>{{ field|capitalize }}</th>
+            <th scope="col">
+            {%- if withSort -%}
+                {{ "{{ sortableHeader('" ~ entity|lower ~"', '"~ field ~"', '"~ field|replace({'_': ' '})|capitalize ~"') }}" }}
+            {%- else -%}
+                {{ field|replace({'_': ' '})|capitalize }}
+            {%- endif -%}
+            </th>
 
         {%- endfor %}
 

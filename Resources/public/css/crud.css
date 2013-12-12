@@ -21,3 +21,7 @@ form.well ul li {
     color: #FFFFFF;
     background-color: #B94A48;
 }
+.feature-inactive {
+    opacity: 0.25;
+    filter: alpha(opacity=25);
+}

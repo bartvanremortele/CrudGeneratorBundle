@@ -30,7 +30,6 @@
 
 
 <div class="row">
-
     <div class="col-md-8">
         <h1>{{ "{{ 'views.index.list'|trans({'%entity%': '" }}{{ entity }}{{ "'}, 'JordiLlonchCrudGeneratorBundle') }}" }}</h1>
     </div>
@@ -43,7 +42,7 @@
         &nbsp;
     </div>
     <div class="col-md-2">
-        <div class="filters-right">
+        <div class="filters-right dropdown">
             <a class="btn dropdown-toggle" data-toggle="collapse" data-target="#filters">
             {{ "{% if filterIsActive %}" }}
                 <i class="icon-filter"></i>
@@ -55,7 +54,8 @@
             </a>
         </div>
     </div>
-
+</div>
+<div class="row">
     <div class="col-md-12">
         <div id="filters" class="collapse">
 
@@ -82,72 +82,72 @@
             </form>
         </div>
     </div>
-
+</div>
+<div class="row">
     <div class="col-md-12">
+        <table class="table table-striped table-bordered table-condensed">
+        <thead>
+            <tr>
+            {%- for field, metadata in fields %}
 
-    <table class="table table-striped table-bordered table-condensed">
-    <thead>
-        <tr>
+                <th scope="col">
+                {%- if withSort -%}
+                    {{ "{{ sortableHeader('" ~ entity|lower ~"', '"~ field ~"', '"~ field|replace({'_': ' '})|capitalize ~"') }}" }}
+                {%- else -%}
+                    {{ field|replace({'_': ' '})|capitalize }}
+                {%- endif -%}
+                </th>
+
+            {%- endfor %}
+
+                <th>{{ "{{ 'views.index.actions'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{ '{% for entity in entities %}' }}
+            <tr>
+
         {%- for field, metadata in fields %}
+            {%- if loop.first and ('show' in actions) %}
 
-            <th scope="col">
-            {%- if withSort -%}
-                {{ "{{ sortableHeader('" ~ entity|lower ~"', '"~ field ~"', '"~ field|replace({'_': ' '})|capitalize ~"') }}" }}
-            {%- else -%}
-                {{ field|replace({'_': ' '})|capitalize }}
-            {%- endif -%}
-            </th>
+                <td><a href="{{ "{{ path('"~ route_name_prefix ~"_show', { 'id': entity.id }) }}" }}">{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</a></td>
 
+            {%- elseif metadata.type in ['date', 'datetime'] %}
+
+                <td>{{ '{% if entity.'~ field|replace({'_': ''}) ~' %}{{ entity.'~ field|replace({'_': ''}) ~'|date(\'Y-m-d H:i:s\') }}{% endif %}' }}</td>
+
+            {%- else %}
+
+                <td>{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</td>
+
+            {%- endif %}
+
+            {%- if loop.last %}
+
+                <td>
+                    {%- include "crud/views/others/actions.html.twig.twig" %}
+                </td>
+
+            {%- endif %}
         {%- endfor %}
 
-            <th>{{ "{{ 'views.index.actions'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }}</th>
-        </tr>
-    </thead>
-    <tbody>
-    {{ '{% for entity in entities %}' }}
-        <tr>
-
-    {%- for field, metadata in fields %}
-        {%- if loop.first and ('show' in actions) %}
-
-            <td><a href="{{ "{{ path('"~ route_name_prefix ~"_show', { 'id': entity.id }) }}" }}">{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</a></td>
-
-        {%- elseif metadata.type in ['date', 'datetime'] %}
-
-            <td>{{ '{% if entity.'~ field|replace({'_': ''}) ~' %}{{ entity.'~ field|replace({'_': ''}) ~'|date(\'Y-m-d H:i:s\') }}{% endif %}' }}</td>
-
-        {%- else %}
-
-            <td>{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</td>
-
-        {%- endif %}
-
-        {%- if loop.last %}
-
-            <td>
-                {%- include "crud/views/others/actions.html.twig.twig" %}
-            </td>
-
-        {%- endif %}
-    {%- endfor %}
-
-        </tr>
-    {{ '{% endfor %}' }}
-    </tbody>
-</table>
+            </tr>
+        {{ '{% endfor %}' }}
+        </tbody>
+        </table>
     </div>
-
+</div>
+<div class="row">
     <div class="col-md-4">
     {{ '{{ pagerHtml|raw }}' }}
     </div>
-
-    {% if 'new' in actions %}
     <div class="col-md-8">
-    <a class="btn btn-primary likepaginator" href="{{ "{{ path('"~ route_name_prefix ~"_new') }}" }}">
+    {% if 'new' in actions %}
+        <a class="btn btn-primary likepaginator" href="{{ "{{ path('"~ route_name_prefix ~"_new') }}" }}">
             {{ "{{ 'views.index.createnew'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }} {{ entity }}
         </a>
-    </div>
     {% endif %}
+    </div>
 </div>
 
 {{ "{% endblock %}" }}

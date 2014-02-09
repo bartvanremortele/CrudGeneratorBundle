@@ -104,6 +104,7 @@ class JordiLlonchCrudGenerator extends DoctrineCrudGenerator
      * @param BundleInterface   $bundle   The bundle in which to create the class
      * @param string            $entity   The entity relative class name
      * @param ClassMetadataInfo $metadata The entity metadata class
+     * @throws \RuntimeException
      */
     public function generateFormFilter(BundleInterface $bundle, $entity, ClassMetadataInfo $metadata)
     {

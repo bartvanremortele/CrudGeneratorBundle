@@ -31,10 +31,10 @@
 
 <div class="row">
 
-    <div class="span8">
+    <div class="col-md-8">
         <h1>{{ "{{ 'views.index.list'|trans({'%entity%': '" }}{{ entity }}{{ "'}, 'JordiLlonchCrudGeneratorBundle') }}" }}</h1>
     </div>
-    <div class="span2">
+    <div class="col-md-2">
         {{ '{% if form_errors(filterForm) %}' }}
         <div class="alert alert-block alert-error fade in form-errors">
             {{ '{{ form_errors(filterForm) }}' }}
@@ -42,7 +42,7 @@
         {{ '{% endif %}' }}
         &nbsp;
     </div>
-    <div class="span2">
+    <div class="col-md-2">
         <div class="filters-right">
             <a class="btn dropdown-toggle" data-toggle="collapse" data-target="#filters">
             {{ "{% if filterIsActive %}" }}
@@ -56,14 +56,20 @@
         </div>
     </div>
 
-    <div class="span12">
+    <div class="col-md-12">
         <div id="filters" class="collapse">
 
-            <form class="well" action="{{ "{{ path('"~ route_name_prefix ~"') }}" }}" method="get" {{ "{{ form_enctype(filterForm) }}" }}>
+            <form class="well form-horizontal" action="{{ "{{ path('"~ route_name_prefix ~"') }}" }}" method="get" {{ "{{ form_enctype(filterForm) }}" }}>
 
                 {%- for field, metadata in fields %}
-
-                {{ "{{ form_row(filterForm." ~ field ~ ") }}" }}
+                <div class="form-group">
+                    <div class="col-md-2">
+                        {{ "{{ form_label(filterForm." ~ field ~ ") }}" }}
+                    </div>
+                    <div class="col-md-10">
+                        {{ "{{ form_widget(filterForm." ~ field ~ ", {\"attr\": {\"class\": \"form-control\"} }) }}" }}
+                    </div>
+                </div>
 
                 {%- endfor %}
 
@@ -77,7 +83,7 @@
         </div>
     </div>
 
-    <div class="span12">
+    <div class="col-md-12">
 
     <table class="table table-striped table-bordered table-condensed">
     <thead>
@@ -131,12 +137,12 @@
 </table>
     </div>
 
-    <div class="span4">
+    <div class="col-md-4">
     {{ '{{ pagerHtml|raw }}' }}
     </div>
 
     {% if 'new' in actions %}
-    <div class="span8">
+    <div class="col-md-8">
     <a class="btn btn-primary likepaginator" href="{{ "{{ path('"~ route_name_prefix ~"_new') }}" }}">
             {{ "{{ 'views.index.createnew'|trans({}, 'JordiLlonchCrudGeneratorBundle') }}" }} {{ entity }}
         </a>
